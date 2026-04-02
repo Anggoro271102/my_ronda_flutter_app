@@ -17,7 +17,7 @@ class TouchPoints {
 }
 
 class GridMagnification extends StatefulWidget {
-  const GridMagnification({Key? key}) : super(key: key);
+  const GridMagnification({super.key});
 
   static const String route = '/animations/grid-magnification';
 
@@ -42,7 +42,9 @@ class _GridMagnificationState extends State<GridMagnification>
     if (!isEnded) {
       setState(() {
         touchPos = TouchPoints(
-            x: touchDetails.localPosition.dx, y: touchDetails.localPosition.dy);
+          x: touchDetails.localPosition.dx,
+          y: touchDetails.localPosition.dy,
+        );
       });
     }
 
@@ -60,11 +62,13 @@ class _GridMagnificationState extends State<GridMagnification>
   @override
   void initState() {
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 800));
-    _gridAnim = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.linear,
-    ));
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _gridAnim = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
     super.initState();
   }
 
@@ -90,39 +94,41 @@ class _GridMagnificationState extends State<GridMagnification>
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-          backgroundColor: Colors.black,
-          body: SafeArea(
-            child: Align(
-              child: GestureDetector(
-                onPanDown: (details) {
-                  onTouchUpdate(details);
-                },
-                onPanUpdate: (details) {
-                  onTouchUpdate(details, isContinuous: true);
-                },
-                onPanEnd: (details) {
-                  onTouchUpdate(details, isEnded: true);
-                },
-                child: SizedBox(
-                  width: maxCol * boxSize,
-                  height: maxRow * boxSize,
-                  child: GridView.count(
-                    crossAxisCount: maxCol,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: List.generate(
-                      maxCol * maxRow,
-                      (index) => BoxItem(
-                          maxCol: maxCol,
-                          index: index,
-                          touchPos: touchPos,
-                          animationController: _controller,
-                          gridAnim: _gridAnim),
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: Align(
+            child: GestureDetector(
+              onPanDown: (details) {
+                onTouchUpdate(details);
+              },
+              onPanUpdate: (details) {
+                onTouchUpdate(details, isContinuous: true);
+              },
+              onPanEnd: (details) {
+                onTouchUpdate(details, isEnded: true);
+              },
+              child: SizedBox(
+                width: maxCol * boxSize,
+                height: maxRow * boxSize,
+                child: GridView.count(
+                  crossAxisCount: maxCol,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: List.generate(
+                    maxCol * maxRow,
+                    (index) => BoxItem(
+                      maxCol: maxCol,
+                      index: index,
+                      touchPos: touchPos,
+                      animationController: _controller,
+                      gridAnim: _gridAnim,
                     ),
                   ),
                 ),
               ),
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -134,14 +140,14 @@ class BoxItem extends StatefulWidget {
   final AnimationController animationController;
   final Animation gridAnim;
 
-  const BoxItem(
-      {this.index = 0,
-      this.maxCol = 0,
-      this.touchPos,
-      required this.animationController,
-      required this.gridAnim,
-      Key? key})
-      : super(key: key);
+  const BoxItem({
+    this.index = 0,
+    this.maxCol = 0,
+    this.touchPos,
+    required this.animationController,
+    required this.gridAnim,
+    super.key,
+  });
 
   @override
   State<BoxItem> createState() => _BoxItemState();
@@ -156,9 +162,10 @@ class _BoxItemState extends State<BoxItem> {
   @override
   void initState() {
     /// Initially get indexed icon, but if more then icons array length then get a random index
-    boxIcon = widget.index < icons.appIcons.length
-        ? icons.appIcons[widget.index]
-        : icons.appIcons[math.Random().nextInt(icons.appIcons.length)];
+    boxIcon =
+        widget.index < icons.appIcons.length
+            ? icons.appIcons[widget.index]
+            : icons.appIcons[math.Random().nextInt(icons.appIcons.length)];
     super.initState();
   }
 
@@ -171,8 +178,10 @@ class _BoxItemState extends State<BoxItem> {
     var distance = 0.0;
     if (widget.touchPos != null) {
       /// Getting distance between two points using equation, d=√((x2 – x1)² + (y2 – y1)²)
-      distance = math.sqrt(math.pow(widget.touchPos!.x! - posX, 2) +
-          math.pow(widget.touchPos!.y! - posY, 2));
+      distance = math.sqrt(
+        math.pow(widget.touchPos!.x! - posX, 2) +
+            math.pow(widget.touchPos!.y! - posY, 2),
+      );
     }
 
     if (widget.touchPos != null) {
@@ -223,11 +232,15 @@ class _BoxItemState extends State<BoxItem> {
       animation: widget.animationController,
       builder: (c, child) {
         return Transform.translate(
-            offset: Offset(translateX * widget.gridAnim.value,
-                translateY * widget.gridAnim.value),
-            child: Transform.scale(
-                scale: 1.0 - ((1 - scaleVal!) * widget.gridAnim.value),
-                child: child));
+          offset: Offset(
+            translateX * widget.gridAnim.value,
+            translateY * widget.gridAnim.value,
+          ),
+          child: Transform.scale(
+            scale: 1.0 - ((1 - scaleVal!) * widget.gridAnim.value),
+            child: child,
+          ),
+        );
       },
       child: Container(
         width: boxSize,
