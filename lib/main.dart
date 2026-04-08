@@ -4,7 +4,7 @@ import 'package:flutter_samples/samples/ui/rive_app/navigation/auth/domain/servi
 import 'package:flutter_samples/samples/ui/rive_app/navigation/auth/entities/user_model.dart';
 import 'package:flutter_samples/samples/ui/rive_app/navigation/auth/presentation/provider/user_provider.dart';
 import 'package:geolocator/geolocator.dart';
-
+import 'dart:io';
 // Pastikan path import ini sesuai dengan lokasi file SignInView kamu
 import 'samples/ui/rive_app/core/localizations/app_localizations.dart';
 import 'samples/ui/rive_app/core/localizations/locale_provider.dart';
@@ -18,6 +18,7 @@ void main() async {
   // Cek Session sebelum App jalan
   final authService = AuthService();
   final UserModel? loggedInUser = await authService.getLocalUser();
+  HttpOverrides.global = MyHttpOverrides();
 
   runApp(
     ProviderScope(
@@ -109,5 +110,14 @@ class MyApp extends ConsumerWidget {
         return null;
       },
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

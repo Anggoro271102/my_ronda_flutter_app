@@ -23,14 +23,6 @@ class CustomTabBar extends StatefulWidget {
 class _CustomTabBarState extends State<CustomTabBar> {
   final List<TabItem> _icons = TabItem.tabItemsList;
 
-  Future<void> _launchWhatsApp() async {
-    final Uri url = Uri.parse(
-      "https://wa.me/6285155048775",
-    ); // Ganti dengan nomor WA Mario
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      debugPrint("Could not launch WhatsApp");
-    }
-  }
 
   void _onRiveIconInit(Artboard artboard, index) {
     final controller = StateMachineController.fromArtboard(

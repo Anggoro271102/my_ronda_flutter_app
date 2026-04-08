@@ -34,6 +34,12 @@ class _SignInViewState extends ConsumerState<SignInView> {
   final AuthService _authService = AuthService();
 
   @override
+  void initState() {
+    super.initState();
+    _showSessionExpiredNoticeIfAny();
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passController.dispose();
@@ -48,6 +54,16 @@ class _SignInViewState extends ConsumerState<SignInView> {
         behavior: SnackBarBehavior.floating,
       ),
     );
+  }
+
+  Future<void> _showSessionExpiredNoticeIfAny() async {
+    final shouldShow = await _authService.consumeSessionExpiredNotice();
+    if (!mounted || !shouldShow) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _showSnackBar("Sesi login sudah habis (10 jam). Silakan login ulang.");
+    });
   }
 
   // --- RIVE LOGIC ---

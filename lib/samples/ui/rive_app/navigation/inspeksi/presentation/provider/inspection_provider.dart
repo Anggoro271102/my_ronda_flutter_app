@@ -110,6 +110,56 @@ class InspectionNotifier extends StateNotifier<InspectionState> {
 
   Map<String, dynamic>? _lastFinalPayload;
 
+  void _logDioException(
+    DioException e, {
+    String tag = "DIO",
+    StackTrace? stackTrace,
+  }) {
+    final req = e.requestOptions;
+    final res = e.response;
+
+    debugPrint("[$tag] DioException ------------------------------");
+    debugPrint("[$tag] type: ${e.type}");
+    debugPrint("[$tag] message: ${e.message}");
+    debugPrint("[$tag] method: ${req.method}");
+    debugPrint("[$tag] uri: ${req.uri}");
+    debugPrint("[$tag] connectTimeout: ${req.connectTimeout}");
+    debugPrint("[$tag] sendTimeout: ${req.sendTimeout}");
+    debugPrint("[$tag] receiveTimeout: ${req.receiveTimeout}");
+    debugPrint("[$tag] request headers: ${req.headers}");
+    debugPrint("[$tag] query: ${req.queryParameters}");
+
+    if (req.data != null) {
+      if (req.data is FormData) {
+        final data = req.data as FormData;
+        final fields = data.fields.map((f) => "${f.key}=${f.value}").toList();
+        final files = data.files
+            .map((f) => "${f.key}=${f.value.filename ?? 'unknown'}")
+            .toList();
+        debugPrint("[$tag] request form fields: $fields");
+        debugPrint("[$tag] request form files: $files");
+      } else {
+        debugPrint("[$tag] request data: ${req.data}");
+      }
+    }
+
+    if (res != null) {
+      debugPrint("[$tag] response status: ${res.statusCode}");
+      debugPrint("[$tag] response headers: ${res.headers.map}");
+      debugPrint("[$tag] response data: ${res.data}");
+    } else {
+      debugPrint("[$tag] response: <null>");
+    }
+
+    if (e.error != null) {
+      debugPrint("[$tag] underlying error: ${e.error}");
+    }
+    if (stackTrace != null) {
+      debugPrint("[$tag] stackTrace: $stackTrace");
+    }
+    debugPrint("[$tag] ------------------------------------------");
+  }
+
   String _friendlyDioMessage(DioException e) {
     final status = e.response?.statusCode;
 
@@ -139,9 +189,7 @@ class InspectionNotifier extends StateNotifier<InspectionState> {
   }
 
   final Dio _dioAI = Dio(
-    BaseOptions(
-      baseUrl: "https://autocpi-balaraja.cp.co.id/cpi_balaraja/api_tracking",
-    ),
+    BaseOptions(baseUrl: "https://inspector-api.cp.co.id"),
   );
   final Dio _dioTrack = Dio(BaseOptions(baseUrl: "https://track.cpipga.com"));
 
@@ -253,6 +301,7 @@ class InspectionNotifier extends StateNotifier<InspectionState> {
         error: null,
       );
     } on DioException catch (e) {
+      _logDioException(e, tag: "PROCESS_INSPECTION");
       final msg = _friendlyDioMessage(e);
       state = state.copyWith(isLoading: false, error: msg);
     } catch (e) {
@@ -305,6 +354,7 @@ class InspectionNotifier extends StateNotifier<InspectionState> {
       state = state.copyWith(isLoading: false, isFinalSubmitted: true);
       return true;
     } on DioException catch (e) {
+      _logDioException(e, tag: "SUBMIT_FINAL");
       final msg = _friendlyDioMessage(e);
       state = state.copyWith(isLoading: false, error: msg);
       return false;
@@ -327,36 +377,41 @@ class InspectionNotifier extends StateNotifier<InspectionState> {
   }
 
   Future<Map<String, dynamic>> uploadAndPollAI(String path) async {
-    FormData formData = FormData.fromMap({
-      "file": await MultipartFile.fromFile(path),
-    });
-    final response = await _dioAI.post("/analyze-detailed", data: formData);
-    final taskId = response.data['task_id'];
+    try {
+      FormData formData = FormData.fromMap({
+        "file": await MultipartFile.fromFile(path),
+      });
+      final response = await _dioAI.post("/analyze-detailed", data: formData);
+      final taskId = response.data['task_id'];
 
-    while (true) {
-      await Future.delayed(const Duration(seconds: 5));
-      final statusRes = await _dioAI.get("/status/$taskId");
+      while (true) {
+        await Future.delayed(const Duration(seconds: 5));
+        final statusRes = await _dioAI.get("/status/$taskId");
 
-      // Log status setiap kali polling agar kamu bisa memantau pergerakan di terminal
-      debugPrint(
-        "🔍 Polling Status untuk Task $taskId: ${statusRes.data['status']}",
-      );
+        // Log status setiap kali polling agar kamu bisa memantau pergerakan di terminal
+        debugPrint(
+          "🔍 Polling Status untuk Task $taskId: ${statusRes.data['status']}",
+        );
 
-      if (statusRes.data['status'] == 'SUCCESS') {
-        final result = statusRes.data['result'];
+        if (statusRes.data['status'] == 'SUCCESS') {
+          final result = statusRes.data['result'];
 
-        // TAMPILKAN HASIL RESPONSE SECARA LENGKAP
-        debugPrint("✅ AI SUCCESS RESPONSE: $result");
+          // TAMPILKAN HASIL RESPONSE SECARA LENGKAP
+          debugPrint("✅ AI SUCCESS RESPONSE: $result");
 
-        return result;
+          return result;
+        }
+
+        if (statusRes.data['status'] == 'FAILURE') {
+          debugPrint("❌ AI FAILURE DETECTED: ${statusRes.data['message']}");
+          throw Exception("AI Fail: ${statusRes.data['message']}");
+        }
+
+        // Tips: Kamu bisa menambahkan timeout manual di sini jika polling > 3 menit
       }
-
-      if (statusRes.data['status'] == 'FAILURE') {
-        debugPrint("❌ AI FAILURE DETECTED: ${statusRes.data['message']}");
-        throw Exception("AI Fail: ${statusRes.data['message']}");
-      }
-
-      // Tips: Kamu bisa menambahkan timeout manual di sini jika polling > 3 menit
+    } on DioException catch (e, st) {
+      _logDioException(e, tag: "AI_UPLOAD_POLL", stackTrace: st);
+      rethrow;
     }
   }
 

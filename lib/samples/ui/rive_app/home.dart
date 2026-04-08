@@ -89,36 +89,6 @@ class _RiveAppHomeState extends ConsumerState<RiveAppHome>
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
   }
 
-  Future<void> _showExitWarningDialog(
-    BuildContext context,
-    VoidCallback onConfirm,
-  ) async {
-    return showCupertinoDialog(
-      context: context,
-      builder:
-          (context) => CupertinoAlertDialog(
-            title: const Text("Laporan Belum Tersimpan"),
-            content: const Text(
-              "Pindah halaman akan menghapus data analisis ini. Lanjutkan keluar?",
-            ),
-            actions: [
-              CupertinoDialogAction(
-                child: const Text("Batal"),
-                onPressed: () => Navigator.pop(context),
-              ),
-              CupertinoDialogAction(
-                isDestructiveAction: true,
-                child: const Text("Ya, Keluar"),
-                onPressed: () {
-                  Navigator.pop(context); // Tutup dialog
-                  onConfirm(); // Jalankan callback pindah tab
-                },
-              ),
-            ],
-          ),
-    );
-  }
-
   Future<void> _launchWhatsApp() async {
     // Pesan otomatis agar user tidak perlu mengetik lagi di lapangan
     const String phoneNumber =
