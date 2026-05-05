@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
@@ -15,7 +16,9 @@ import 'package:flutter_samples/samples/ui/rive_app/theme.dart';
 import 'package:flutter_samples/samples/ui/rive_app/assets.dart' as app_assets;
 import 'package:url_launcher/url_launcher.dart';
 
+import 'navigation/auth/domain/services/auth_service.dart';
 import 'navigation/auth/entities/user_model.dart';
+import 'navigation/auth/presentation/provider/user_provider.dart';
 import 'navigation/inspeksi/presentation/provider/inspection_provider.dart';
 import 'navigation/list_inspeksi/presentation/provider/filter_provider.dart';
 import 'on_boarding/onboarding_view.dart';
@@ -46,11 +49,13 @@ class RiveAppHome extends ConsumerStatefulWidget {
 }
 
 class _RiveAppHomeState extends ConsumerState<RiveAppHome>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late AnimationController? _animationController;
   late AnimationController? _onBoardingAnimController;
   late Animation<double> _onBoardingAnim;
   late Animation<double> _sidebarAnim;
+  final AuthService _authService = AuthService(session: false);
+  Timer? _sessionExpiryTimer;
 
   SMIBool? _menuBtn;
 
@@ -224,6 +229,8 @@ class _RiveAppHomeState extends ConsumerState<RiveAppHome>
 
   @override
   void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
       upperBound: 1,
@@ -244,14 +251,50 @@ class _RiveAppHomeState extends ConsumerState<RiveAppHome>
     );
 
     _tabBody = _screens[0];
-    super.initState();
+    _scheduleSessionExpiryCheck();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _sessionExpiryTimer?.cancel();
     _animationController?.dispose();
     _onBoardingAnimController?.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _scheduleSessionExpiryCheck();
+    }
+  }
+
+  Future<void> _scheduleSessionExpiryCheck() async {
+    _sessionExpiryTimer?.cancel();
+
+    if (!_authService.session) {
+      return;
+    }
+
+    final remaining = await _authService.getSessionRemaining();
+    if (!mounted) return;
+
+    if (remaining == null || remaining <= Duration.zero) {
+      await _forceLoginAgain();
+      return;
+    }
+
+    _sessionExpiryTimer = Timer(remaining, _forceLoginAgain);
+  }
+
+  Future<void> _forceLoginAgain() async {
+    _sessionExpiryTimer?.cancel();
+    await _authService.getSessionRemaining();
+    if (!mounted) return;
+
+    ref.read(userProvider.notifier).state = null;
+    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
   }
 
   @override

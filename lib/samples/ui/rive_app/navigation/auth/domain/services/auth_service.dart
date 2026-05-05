@@ -8,7 +8,10 @@ import '../../../../core/network/dio_client.dart';
 import '../../entities/user_model.dart';
 
 class AuthService {
+  AuthService({this.session = true});
+
   final Dio _dio = DioClient().instance;
+  final bool session;
   static const String _sessionUserKey = 'user_session';
   static const String _sessionLoginAtKey = 'user_session_login_at_ms';
   static const String _sessionExpiredNoticeKey = 'user_session_expired_notice';
@@ -33,6 +36,11 @@ class AuthService {
       return null;
     }
 
+    if (!session) {
+      await prefs.remove(_sessionExpiredNoticeKey);
+      return UserModel.fromJson(jsonDecode(userStr));
+    }
+
     // Backward-compatible: session lama tanpa timestamp dianggap expired.
     if (loginAtMs == null) {
       await prefs.setBool(_sessionExpiredNoticeKey, true);
@@ -41,7 +49,7 @@ class AuthService {
     }
 
     final loginAt = DateTime.fromMillisecondsSinceEpoch(loginAtMs);
-    final isExpired = DateTime.now().difference(loginAt) > _sessionDuration;
+    final isExpired = DateTime.now().difference(loginAt) >= _sessionDuration;
     if (isExpired) {
       await prefs.setBool(_sessionExpiredNoticeKey, true);
       await _clearSessionOnly();
@@ -49,6 +57,38 @@ class AuthService {
     }
 
     return UserModel.fromJson(jsonDecode(userStr));
+  }
+
+  Future<Duration?> getSessionRemaining() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? userStr = prefs.getString(_sessionUserKey);
+    final int? loginAtMs = prefs.getInt(_sessionLoginAtKey);
+
+    if (userStr == null) {
+      return null;
+    }
+
+    if (!session) {
+      return null;
+    }
+
+    if (loginAtMs == null) {
+      await prefs.setBool(_sessionExpiredNoticeKey, true);
+      await _clearSessionOnly();
+      return Duration.zero;
+    }
+
+    final loginAt = DateTime.fromMillisecondsSinceEpoch(loginAtMs);
+    final elapsed = DateTime.now().difference(loginAt);
+    final remaining = _sessionDuration - elapsed;
+
+    if (remaining <= Duration.zero) {
+      await prefs.setBool(_sessionExpiredNoticeKey, true);
+      await _clearSessionOnly();
+      return Duration.zero;
+    }
+
+    return remaining;
   }
 
   Future<void> logout() async {

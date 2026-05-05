@@ -8,7 +8,9 @@ import 'package:flutter_samples/samples/ui/rive_app/assets.dart' as app_assets;
 
 import '../core/localizations/app_localizations.dart';
 import '../core/localizations/locale_provider.dart';
+import '../navigation/auth/domain/services/auth_service.dart';
 import '../navigation/auth/entities/user_model.dart';
+import '../navigation/auth/presentation/provider/user_provider.dart';
 
 class ProfileView extends ConsumerStatefulWidget {
   // Ubah ke ConsumerStatefulWidget
@@ -472,8 +474,11 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
               ),
               CupertinoDialogAction(
                 isDestructiveAction: true,
-                onPressed: () {
-                  // Kembali ke halaman Login dan hapus semua history navigasi
+                onPressed: () async {
+                  await AuthService().logout();
+                  ref.read(userProvider.notifier).state = null;
+                  if (!context.mounted) return;
+
                   Navigator.of(
                     context,
                   ).pushNamedAndRemoveUntil('/login', (route) => false);
