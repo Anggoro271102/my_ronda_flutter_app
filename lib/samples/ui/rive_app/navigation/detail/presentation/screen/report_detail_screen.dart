@@ -137,7 +137,7 @@ class ReportDetailScreen extends ConsumerWidget {
     // controllers init (sekali)
     final catCtrl = ref.watch(categoryControllerProvider);
     final descCtrl = ref.watch(editDescControllerProvider);
-    final gpsCtrl = ref.watch(gpsControllerProvider);
+    // final gpsCtrl = ref.watch(gpsControllerProvider);
     final objCtrl = ref.watch(objectControllerProvider);
     final recCtrl = ref.watch(editRecControllerProvider);
     final areaCtrl = ref.watch(areaControllerProvider);

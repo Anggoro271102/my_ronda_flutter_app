@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Tambahkan ini
+import 'package:flutter_samples/samples/ui/rive_app/navigation/auth/presentation/screen/register_view.dart';
 import 'package:rive/rive.dart' hide LinearGradient, Image;
 
 import '../../../../assets.dart' as app_assets;
@@ -98,7 +99,7 @@ class _SignInViewState extends ConsumerState<SignInView> {
 
     if (email.isEmpty || password.isEmpty) {
       _errorAnim.fire();
-      _showSnackBar("Email dan Password tidak boleh kosong"); 
+      _showSnackBar("Email dan Password tidak boleh kosong");
       return;
     }
 
@@ -137,6 +138,13 @@ class _SignInViewState extends ConsumerState<SignInView> {
       _showSnackBar("Login Gagal: ${e.toString()}");
       setState(() => _isLoading = false);
     }
+  }
+
+  void _goToRegister() {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(builder: (_) => const RegisterView()),
+    );
   }
 
   @override
@@ -211,6 +219,30 @@ class _SignInViewState extends ConsumerState<SignInView> {
                           ),
                           const SizedBox(height: 32),
                           _buildLoginButton(),
+                          const SizedBox(height: 20),
+                          GestureDetector(
+                            onTap: _goToRegister,
+                            child: RichText(
+                              text: const TextSpan(
+                                text: 'Belum punya akun? ',
+                                style: TextStyle(
+                                  color: _textSecondary,
+                                  fontSize: 14,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: 'Buat akun',
+                                    style: TextStyle(
+                                      color: _accentYellow,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: _accentYellow,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),

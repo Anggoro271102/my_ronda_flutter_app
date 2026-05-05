@@ -4,7 +4,6 @@ import 'package:rive/rive.dart' hide LinearGradient;
 import 'package:flutter_samples/samples/ui/rive_app/models/tab_item.dart';
 import 'package:flutter_samples/samples/ui/rive_app/theme.dart';
 import 'package:flutter_samples/samples/ui/rive_app/assets.dart' as app_assets;
-import 'package:url_launcher/url_launcher.dart';
 
 class CustomTabBar extends StatefulWidget {
   const CustomTabBar({
