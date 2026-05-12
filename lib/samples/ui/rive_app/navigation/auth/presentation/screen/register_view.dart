@@ -1,11 +1,34 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rive/rive.dart' hide LinearGradient, Image;
 
 import '../../../../assets.dart' as app_assets;
+
+// ──────────────────────────────────────────────────────────────────────
+// PROVIDER - Ambil data plant dari API
+// ──────────────────────────────────────────────────────────────────────
+final plantsMasterProvider = FutureProvider<List<String>>((ref) async {
+  final dio = Dio(BaseOptions(baseUrl: "https://track.cpipga.com"));
+  try {
+    final response = await dio.get('/api/inspection/master/plants');
+    if (response.statusCode == 200) {
+      final list = List<String>.from(response.data['data']);
+
+      // Hapus data yang mengandung kata "All Plants" (mengabaikan huruf besar/kecil)
+      list.removeWhere((item) => item.toLowerCase() == 'all plants');
+
+      return list;
+    }
+    return []; // Fallback diubah menjadi list kosong jika status bukan 200
+  } catch (e) {
+    return []; // Fallback diubah menjadi list kosong jika koneksi error
+  }
+});
 
 // ──────────────────────────────────────────────────────────────────────
 // CONSTANTS — mirror SignInView palette exactly
@@ -38,25 +61,17 @@ const _departments = [
   'Administration',
 ];
 
-const _plants = [
-  'Plant Krian',
-  'Plant Surabaya',
-  'Plant Jakarta',
-  'Plant Medan',
-  'Plant Makassar',
-];
-
 // ──────────────────────────────────────────────────────────────────────
 // REGISTER VIEW
 // ──────────────────────────────────────────────────────────────────────
-class RegisterView extends StatefulWidget {
+class RegisterView extends ConsumerStatefulWidget {
   const RegisterView({super.key});
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  ConsumerState<RegisterView> createState() => _RegisterViewState();
 }
 
-class _RegisterViewState extends State<RegisterView>
+class _RegisterViewState extends ConsumerState<RegisterView>
     with SingleTickerProviderStateMixin {
   // ── Controllers ──
   final _nameCtrl = TextEditingController();
@@ -199,59 +214,92 @@ class _RegisterViewState extends State<RegisterView>
   }
 
   Future<void> _sendOtp() async {
-    // Validate email before sending OTP
     if (!_isValidCpiEmail(_emailCtrl.text)) {
       setState(
         () => _errors['email'] = 'Masukkan email perusahaan yang valid dulu',
       );
       return;
     }
-
     setState(() {
       _isOtpLoading = true;
       _errors.remove('email');
     });
 
-    // TODO: integrate with your OTP API endpoint
-    // e.g. await ref.read(authServiceProvider).sendOtp(_emailCtrl.text);
-    await Future.delayed(const Duration(seconds: 1)); // simulated delay
-
-    setState(() {
-      _otpSent = true;
-      _isOtpLoading = false;
-      _otpCooldown = 60;
-    });
-    _cooldownAnim.forward(from: 0);
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Kode OTP dikirim ke ${_emailCtrl.text.trim()}'),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
+    try {
+      final dio = Dio(BaseOptions(baseUrl: "https://track.cpipga.com"));
+      await dio.post(
+        '/api/auth/send_otp',
+        data: {'email': _emailCtrl.text.trim()},
       );
+      setState(() {
+        _otpSent = true;
+        _otpCooldown = 60;
+      });
+      _cooldownAnim.forward(from: 0);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('OTP terkirim!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } on DioException catch (e) {
+      final msg = e.response?.data?['message'] ?? 'Gagal mengirim OTP';
+      setState(() => _errors['email'] = msg);
+    } finally {
+      setState(() => _isOtpLoading = false);
     }
   }
 
-  void _submitRegister() {
+  void _submitRegister() async {
     if (!_validate()) return;
-
-    // TODO: wire up to your register API
-    // e.g. ref.read(authServiceProvider).register(...)
     setState(() => _isLoading = true);
-    Future.delayed(const Duration(seconds: 2), () {
+
+    try {
+      final dio = Dio(BaseOptions(baseUrl: "https://track.cpipga.com"));
+      final formData = FormData.fromMap({
+        'name': _nameCtrl.text.trim(),
+        'email': _emailCtrl.text.trim(),
+        'password': _passCtrl.text,
+        'otp': _otpCtrl.text.trim(),
+        'role': _selectedRole!,
+        'department': _selectedDepartment!,
+        'assigned_plant': _selectedPlant!,
+        if (_avatarPath != null)
+          'avatar': await MultipartFile.fromFile(
+            _avatarPath!,
+            filename: 'avatar.jpg',
+          ),
+      });
+
+      await dio.post('/api/auth/register', data: formData);
+      if (!mounted) return;
+      Navigator.pop(context); // Go back to login
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pendaftaran berhasil! Silakan login.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on DioException catch (e) {
+      final msg = e.response?.data?['message'] ?? 'Gagal mendaftar';
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: Colors.redAccent),
+        );
+      }
+    } finally {
       if (mounted) setState(() => _isLoading = false);
-    });
+    }
   }
 
   // ── Build ─────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
+    final plantsAsync = ref.watch(plantsMasterProvider);
+    final List<String> currentPlants = plantsAsync.value ?? ["All Plants"];
     return Scaffold(
       backgroundColor: _scaffoldBg,
       body: Stack(
@@ -277,7 +325,7 @@ class _RegisterViewState extends State<RegisterView>
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
+                              color: Colors.black.withValues(alpha: 0.08),
                               blurRadius: 12,
                             ),
                           ],
@@ -302,7 +350,7 @@ class _RegisterViewState extends State<RegisterView>
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 25,
                           offset: const Offset(0, 15),
                         ),
@@ -427,16 +475,27 @@ class _RegisterViewState extends State<RegisterView>
                         _buildLabel('Plant / Lokasi Tugas'),
                         const SizedBox(height: 8),
                         _buildDropdown(
-                          hint: 'Pilih plant',
+                          // 4. Tampilkan Hint Dinamis berdasarkan Loading Status
+                          hint:
+                              plantsAsync.isLoading
+                                  ? 'Memuat data plant...'
+                                  : 'Pilih plant',
                           icon: Icons.factory_outlined,
-                          items: _plants,
-                          value: _selectedPlant,
+                          items: currentPlants,
+                          // Cegah value yang belum ada di list (agar tidak crash)
+                          value:
+                              currentPlants.contains(_selectedPlant)
+                                  ? _selectedPlant
+                                  : null,
                           errorKey: 'plant',
+                          // 5. Disable dropdown saat loading dengan mengeset null
                           onChanged:
-                              (v) => setState(() {
-                                _selectedPlant = v;
-                                _errors.remove('plant');
-                              }),
+                              plantsAsync.isLoading
+                                  ? null
+                                  : (v) => setState(() {
+                                    _selectedPlant = v;
+                                    _errors.remove('plant');
+                                  }),
                         ),
 
                         const SizedBox(height: 18),
@@ -585,7 +644,7 @@ class _RegisterViewState extends State<RegisterView>
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
+                      color: Colors.black.withValues(alpha: 0.06),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
@@ -618,7 +677,7 @@ class _RegisterViewState extends State<RegisterView>
                   border: Border.all(color: Colors.white, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: _accentYellow.withOpacity(0.4),
+                      color: _accentYellow.withValues(alpha: 0.4),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -781,7 +840,8 @@ class _RegisterViewState extends State<RegisterView>
     required List<String> items,
     required String? value,
     required String errorKey,
-    required void Function(String?) onChanged,
+    required void Function(String?)?
+    onChanged, // <-- PERBAIKAN 1: Tambahkan tanda tanya (?) di sini
   }) {
     final hasError = _errors[errorKey] != null;
     return Column(
@@ -789,7 +849,11 @@ class _RegisterViewState extends State<RegisterView>
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color:
+                onChanged == null
+                    ? Colors.grey.shade100
+                    : Colors
+                        .white, // <-- PERBAIKAN 2: Warna abu-abu jika disabled
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color:
@@ -881,7 +945,7 @@ class _RegisterViewState extends State<RegisterView>
                       isSelected
                           ? [
                             BoxShadow(
-                              color: _accentYellow.withOpacity(0.3),
+                              color: _accentYellow.withValues(alpha: 0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 3),
                             ),
@@ -915,9 +979,9 @@ class _RegisterViewState extends State<RegisterView>
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.08),
+              color: Colors.green.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.green.withOpacity(0.3)),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -1017,6 +1081,7 @@ class _RegisterViewState extends State<RegisterView>
                     padding: EdgeInsets.zero,
                     onPressed: canResend && !_isOtpLoading ? _sendOtp : null,
                     child: AnimatedContainer(
+                      height: 40.0,
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 14,
@@ -1032,7 +1097,7 @@ class _RegisterViewState extends State<RegisterView>
                             canResend && !_isOtpLoading
                                 ? [
                                   BoxShadow(
-                                    color: _accentYellow.withOpacity(0.3),
+                                    color: _accentYellow.withValues(alpha: 0.3),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -1048,17 +1113,19 @@ class _RegisterViewState extends State<RegisterView>
                                   color: Colors.black,
                                 ),
                               )
-                              : Text(
-                                _otpSent && _otpCooldown > 0
-                                    ? '${_otpCooldown}s'
-                                    : 'Kirim OTP',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      canResend && !_isOtpLoading
-                                          ? Colors.black
-                                          : const Color(0xFF94A3B8),
+                              : Center(
+                                child: Text(
+                                  _otpSent && _otpCooldown > 0
+                                      ? '${_otpCooldown}s'
+                                      : 'Kirim OTP',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        canResend && !_isOtpLoading
+                                            ? Colors.black
+                                            : const Color(0xFF94A3B8),
+                                  ),
                                 ),
                               ),
                     ),
@@ -1079,7 +1146,7 @@ class _RegisterViewState extends State<RegisterView>
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: _accentYellow.withOpacity(0.3),
+            color: _accentYellow.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -1120,7 +1187,7 @@ class _RegisterViewState extends State<RegisterView>
   Widget _buildLoadingOverlay() {
     return Positioned.fill(
       child: Container(
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withValues(alpha: 0.3),
         child: Center(
           child: Container(
             padding: const EdgeInsets.all(24),

@@ -207,7 +207,7 @@ class ReportDetailScreen extends ConsumerWidget {
                           border: Border.all(color: _borderColor),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
+                              color: Colors.black.withValues(alpha: 0.03),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -473,7 +473,7 @@ class ReportDetailScreen extends ConsumerWidget {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   width: 2,
                 ),
                 image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
@@ -831,7 +831,7 @@ class ReportDetailScreen extends ConsumerWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFFDD835).withOpacity(0.5),
+          color: const Color(0xFFFDD835).withValues(alpha: 0.5),
           width: 2,
         ),
       ),
@@ -940,7 +940,7 @@ class ReportDetailScreen extends ConsumerWidget {
                       ),
                       Switch(
                         value: isEditModeComp,
-                        activeColor: Colors.green,
+                        activeThumbColor: Colors.green,
                         onChanged: (v) {
                           if (v) {
                             _showEditCompletionDialog(context, ref);
@@ -1075,12 +1075,12 @@ class ReportDetailScreen extends ConsumerWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: Colors.green.withOpacity(0.3),
+              color: Colors.green.withValues(alpha: 0.3),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.green.withOpacity(0.05),
+                color: Colors.green.withValues(alpha: 0.05),
                 blurRadius: 15,
                 offset: const Offset(0, 8),
               ),
@@ -1151,9 +1151,9 @@ class ReportDetailScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.06),
+        color: Colors.red.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.red.withOpacity(0.2)),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
       ),
       child: Text(text, style: const TextStyle(color: Colors.red)),
     );
@@ -1400,7 +1400,7 @@ class ReportDetailScreen extends ConsumerWidget {
         width: 95,
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.grey[50],
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.grey[50],
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : Colors.grey.shade200,
@@ -1455,8 +1455,8 @@ class ReportDetailScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color:
             complete
-                ? Colors.green.withOpacity(0.1)
-                : Colors.orange.withOpacity(0.1),
+                ? Colors.green.withValues(alpha: 0.1)
+                : Colors.orange.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(

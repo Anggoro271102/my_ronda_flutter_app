@@ -1525,22 +1525,17 @@ class _C {
   static const amberLight = Color(0xFFFEF3C7);
   static const red = Color(0xFFDC2626);
   static const redLight = Color(0xFFFEE2E2);
-  static const teal = Color(0xFF0F766E);
-
-  // kept for backward-compat references inside this file
-  static const border = Color(0xFFE5E7EB);
-  static const borderLight = Color(0xFFF3F4F6);
 }
 
 // ── Shadow helpers (identical to report_list_screen) ─────────────────
 List<BoxShadow> get _raised => [
   BoxShadow(
-    color: _C.shadowDark.withOpacity(.42),
+    color: _C.shadowDark.withValues(alpha: 0.42),
     offset: const Offset(4, 6),
     blurRadius: 14,
   ),
   BoxShadow(
-    color: _C.shadowLight.withOpacity(.9),
+    color: _C.shadowLight.withValues(alpha: 0.9),
     offset: const Offset(-2, -2),
     blurRadius: 6,
   ),
@@ -1548,12 +1543,12 @@ List<BoxShadow> get _raised => [
 
 List<BoxShadow> get _card => [
   BoxShadow(
-    color: _C.shadowDark.withOpacity(.22),
+    color: _C.shadowDark.withValues(alpha: 0.22),
     offset: const Offset(4, 6),
     blurRadius: 16,
   ),
   BoxShadow(
-    color: _C.shadowLight.withOpacity(.8),
+    color: _C.shadowLight.withValues(alpha: 0.8),
     offset: const Offset(-1, -1),
     blurRadius: 4,
   ),
@@ -1664,11 +1659,6 @@ class _Header extends StatelessWidget {
   const _Header({required this.user});
   final dynamic user;
 
-  String get _initials {
-    final name = user?.name as String?;
-    if (name == null || name.isEmpty) return 'U';
-    return name.trim().split(' ').map((w) => w[0]).take(2).join().toUpperCase();
-  }
 
   String get _greeting {
     final h = DateTime.now().hour;
@@ -1866,7 +1856,7 @@ class _PlantDropdownState extends ConsumerState<_PlantDropdown>
                                 borderRadius: BorderRadius.circular(6),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: _C.shadowDark.withOpacity(.3),
+                                    color: _C.shadowDark.withValues(alpha: 0.3),
                                     offset: const Offset(2, 2),
                                     blurRadius: 4,
                                   ),
@@ -2647,7 +2637,7 @@ class _BarChartSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: _C.shadowDark.withOpacity(.2),
+                      color: _C.shadowDark.withValues(alpha: 0.2),
                       offset: const Offset(2, 2),
                       blurRadius: 6,
                     ),
@@ -2796,6 +2786,7 @@ class _SectionTitle extends StatelessWidget {
 }
 
 /// Reusable neumorphic raised button (white, box-shadow)
+// ignore: unused_element
 class _NeuBtn extends StatelessWidget {
   const _NeuBtn({
     required this.size,

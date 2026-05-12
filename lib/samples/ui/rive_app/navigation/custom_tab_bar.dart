@@ -22,7 +22,6 @@ class CustomTabBar extends StatefulWidget {
 class _CustomTabBarState extends State<CustomTabBar> {
   final List<TabItem> _icons = TabItem.tabItemsList;
 
-
   void _onRiveIconInit(Artboard artboard, index) {
     final controller = StateMachineController.fromArtboard(
       artboard,
@@ -62,19 +61,19 @@ class _CustomTabBarState extends State<CustomTabBar> {
                   borderRadius: BorderRadius.circular(24),
                   gradient: LinearGradient(
                     colors: [
-                      Colors.white.withOpacity(0.5),
-                      Colors.white.withOpacity(0),
+                      Colors.white.withValues(alpha: 0.5),
+                      Colors.white.withValues(alpha: 0),
                     ],
                   ),
                 ),
                 child: Container(
                   clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(
-                    color: RiveAppTheme.background2.withOpacity(0.8),
+                    color: RiveAppTheme.background2.withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: RiveAppTheme.background2.withOpacity(0.3),
+                        color: RiveAppTheme.background2.withValues(alpha: 0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 20),
                       ),
@@ -145,18 +144,18 @@ class _CustomTabBarState extends State<CustomTabBar> {
             //     borderRadius: BorderRadius.circular(18),
             //     gradient: LinearGradient(
             //       colors: [
-            //         Colors.white.withOpacity(0.5),
-            //         Colors.white.withOpacity(0),
+            //         Colors.white.withValues(alpha: 0.5),
+            //         Colors.white.withValues(alpha: 0),
             //       ],
             //     ),
             //   ),
             //   child: Container(
             //     decoration: BoxDecoration(
-            //       color: RiveAppTheme.background2.withOpacity(0.8),
+            //       color: RiveAppTheme.background2.withValues(alpha: 0.8),
             //       borderRadius: BorderRadius.circular(18),
             //       boxShadow: [
             //         BoxShadow(
-            //           color: RiveAppTheme.background2.withOpacity(0.3),
+            //           color: RiveAppTheme.background2.withValues(alpha: 0.3),
             //           blurRadius: 20,
             //           offset: const Offset(0, 20),
             //         ),

@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_samples/models/samples.dart';
 
 class GridItemView extends StatelessWidget {
-  const GridItemView(
-      {super.key, this.index = 0, this.onPressed, required this.listItem});
+  const GridItemView({
+    super.key,
+    this.index = 0,
+    this.onPressed,
+    required this.listItem,
+  });
 
   final int index;
   final Function? onPressed;
@@ -20,12 +24,8 @@ class GridItemView extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         child: Stack(
           children: [
-            Positioned.fill(
-              child: Image.asset(
-                listItem.background,
-              ),
-            ),
-            Container(color: Colors.black.withOpacity(0.5)),
+            Positioned.fill(child: Image.asset(listItem.background)),
+            Container(color: Colors.black.withValues(alpha: 0.5)),
             Align(
               alignment: Alignment.center,
               child: Padding(
@@ -34,12 +34,13 @@ class GridItemView extends StatelessWidget {
                   listItem.name,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

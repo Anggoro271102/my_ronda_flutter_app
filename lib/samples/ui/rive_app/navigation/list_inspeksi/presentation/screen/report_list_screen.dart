@@ -58,12 +58,12 @@ class _C {
 
 List<BoxShadow> get _raised => [
   BoxShadow(
-    color: _C.shadowDark.withOpacity(.42),
+    color: _C.shadowDark.withValues(alpha: 0.42),
     offset: const Offset(4, 6),
     blurRadius: 14,
   ),
   BoxShadow(
-    color: _C.shadowLight.withOpacity(.9),
+    color: _C.shadowLight.withValues(alpha: 0.9),
     offset: const Offset(-2, -2),
     blurRadius: 6,
   ),
@@ -71,12 +71,12 @@ List<BoxShadow> get _raised => [
 
 List<BoxShadow> get _card => [
   BoxShadow(
-    color: _C.shadowDark.withOpacity(.22),
+    color: _C.shadowDark.withValues(alpha: 0.22),
     offset: const Offset(4, 6),
     blurRadius: 16,
   ),
   BoxShadow(
-    color: _C.shadowLight.withOpacity(.8),
+    color: _C.shadowLight.withValues(alpha: 0.8),
     offset: const Offset(-1, -1),
     blurRadius: 4,
   ),
@@ -325,7 +325,7 @@ class _SearchRow extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: _C.shadowDark.withOpacity(.38),
+                    color: _C.shadowDark.withValues(alpha: 0.38),
                     offset: const Offset(3, 3),
                     blurRadius: 7,
                     spreadRadius: -1,
@@ -481,7 +481,7 @@ class _QuickTabs extends ConsumerWidget {
                     isActive
                         ? [
                           BoxShadow(
-                            color: _C.textPrimary.withOpacity(.28),
+                            color: _C.textPrimary.withValues(alpha: 0.28),
                             offset: const Offset(3, 4),
                             blurRadius: 10,
                           ),
@@ -828,7 +828,7 @@ class _FilterOverlay extends ConsumerWidget {
     return GestureDetector(
       onTap: onClose,
       child: Container(
-        color: _C.textPrimary.withOpacity(.18),
+        color: _C.textPrimary.withValues(alpha: 0.18),
         child: Align(
           alignment: Alignment.bottomCenter,
           child: GestureDetector(
@@ -1046,7 +1046,7 @@ class _FilterSheet extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: _C.teal.withOpacity(.35),
+                      color: _C.teal.withValues(alpha: 0.35),
                       offset: const Offset(0, 6),
                       blurRadius: 14,
                     ),
@@ -1207,7 +1207,7 @@ class _ExpandedDropdownState extends ConsumerState<_ExpandedDropdown>
                               borderRadius: BorderRadius.circular(6),
                               boxShadow: [
                                 BoxShadow(
-                                  color: _C.shadowDark.withOpacity(.3),
+                                  color: _C.shadowDark.withValues(alpha: 0.3),
                                   offset: const Offset(2, 2),
                                   blurRadius: 4,
                                 ),
@@ -1355,7 +1355,7 @@ class _ToggleBtn extends StatelessWidget {
               isOn
                   ? [
                     BoxShadow(
-                      color: _C.textPrimary.withOpacity(.28),
+                      color: _C.textPrimary.withValues(alpha: 0.28),
                       offset: const Offset(3, 4),
                       blurRadius: 10,
                     ),
@@ -1412,7 +1412,7 @@ class _SevChip extends StatelessWidget {
               isOn
                   ? [
                     BoxShadow(
-                      color: _C.shadowDark.withOpacity(.35),
+                      color: _C.shadowDark.withValues(alpha: 0.35),
                       offset: const Offset(2, 2),
                       blurRadius: 6,
                       spreadRadius: -1,
@@ -1611,12 +1611,12 @@ class _ErrorState extends StatelessWidget {
 // // ── Shadow helpers ──────────────────────────────────────────────────
 // List<BoxShadow> get _raised => [
 //   BoxShadow(
-//     color: _C.shadowDark.withOpacity(.42),
+//     color: _C.shadowDark.withValues(alpha: 0.42),
 //     offset: const Offset(4, 6),
 //     blurRadius: 14,
 //   ),
 //   BoxShadow(
-//     color: _C.shadowLight.withOpacity(.9),
+//     color: _C.shadowLight.withValues(alpha: 0.9),
 //     offset: const Offset(-2, -2),
 //     blurRadius: 6,
 //   ),
@@ -1624,12 +1624,12 @@ class _ErrorState extends StatelessWidget {
 
 // List<BoxShadow> get _card => [
 //   BoxShadow(
-//     color: _C.shadowDark.withOpacity(.22),
+//     color: _C.shadowDark.withValues(alpha: 0.22),
 //     offset: const Offset(4, 6),
 //     blurRadius: 16,
 //   ),
 //   BoxShadow(
-//     color: _C.shadowLight.withOpacity(.8),
+//     color: _C.shadowLight.withValues(alpha: 0.8),
 //     offset: const Offset(-1, -1),
 //     blurRadius: 4,
 //   ),
@@ -1879,7 +1879,7 @@ class _ErrorState extends StatelessWidget {
 //                 borderRadius: BorderRadius.circular(14),
 //                 boxShadow: [
 //                   BoxShadow(
-//                     color: _C.shadowDark.withOpacity(.38),
+//                     color: _C.shadowDark.withValues(alpha: 0.38),
 //                     offset: const Offset(3, 3),
 //                     blurRadius: 7,
 //                     spreadRadius: -1,
@@ -2035,7 +2035,7 @@ class _ErrorState extends StatelessWidget {
 //                     isActive
 //                         ? [
 //                           BoxShadow(
-//                             color: _C.textPrimary.withOpacity(.28),
+//                             color: _C.textPrimary.withValues(alpha: 0.28),
 //                             offset: const Offset(3, 4),
 //                             blurRadius: 10,
 //                           ),
@@ -2395,7 +2395,7 @@ class _ErrorState extends StatelessWidget {
 //     return GestureDetector(
 //       onTap: onClose,
 //       child: Container(
-//         color: _C.textPrimary.withOpacity(.18),
+//         color: _C.textPrimary.withValues(alpha: 0.18),
 //         child: Align(
 //           alignment: Alignment.bottomCenter,
 //           child: GestureDetector(
@@ -2623,7 +2623,7 @@ class _ErrorState extends StatelessWidget {
 //                 borderRadius: BorderRadius.circular(16),
 //                 boxShadow: [
 //                   BoxShadow(
-//                     color: _C.teal.withOpacity(.35),
+//                     color: _C.teal.withValues(alpha: 0.35),
 //                     offset: const Offset(0, 6),
 //                     blurRadius: 14,
 //                   ),
@@ -2701,7 +2701,7 @@ class _ErrorState extends StatelessWidget {
 //               isOn
 //                   ? [
 //                     BoxShadow(
-//                       color: _C.textPrimary.withOpacity(.28),
+//                       color: _C.textPrimary.withValues(alpha: 0.28),
 //                       offset: const Offset(3, 4),
 //                       blurRadius: 10,
 //                     ),
@@ -2818,7 +2818,7 @@ class _ErrorState extends StatelessWidget {
 //               isOn
 //                   ? [
 //                     BoxShadow(
-//                       color: _C.shadowDark.withOpacity(.35),
+//                       color: _C.shadowDark.withValues(alpha: 0.35),
 //                       offset: const Offset(2, 2),
 //                       blurRadius: 6,
 //                       spreadRadius: -1,

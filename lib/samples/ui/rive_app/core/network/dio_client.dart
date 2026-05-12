@@ -50,6 +50,7 @@ class _DioLogInterceptor extends Interceptor {
   final bool logErrors;
   final int maxBodyChars;
 
+  // ignore: avoid_print
   void _p(String msg) => print(msg);
 
   String _clip(String s) {

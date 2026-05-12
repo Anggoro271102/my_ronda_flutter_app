@@ -178,20 +178,6 @@ class InspectionReport {
     return Severity.good;
   }
 
-  static Category _parseCategory(String? val) {
-    if (val == null) return Category.other;
-    final v = val.toLowerCase();
-    if (v.contains('clean') || v.contains('kebersihan')) {
-      return Category.cleaning;
-    }
-    if (v.contains('maint') || v.contains('perbaikan')) {
-      return Category.maintenance;
-    }
-    if (v.contains('safe') || v.contains('keamanan')) return Category.safety;
-    if (v.contains('equip') || v.contains('alat')) return Category.equipment;
-
-    return Category.other;
-  }
 
   bool get isResolved => isComplete == true || resolvedAt != null;
 

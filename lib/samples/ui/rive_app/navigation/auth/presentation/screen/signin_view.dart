@@ -169,7 +169,7 @@ class _SignInViewState extends ConsumerState<SignInView> {
                         borderRadius: BorderRadius.circular(28),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 25,
                             offset: const Offset(0, 15),
                           ),
@@ -299,7 +299,7 @@ class _SignInViewState extends ConsumerState<SignInView> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: _accentYellow.withOpacity(0.3),
+            color: _accentYellow.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

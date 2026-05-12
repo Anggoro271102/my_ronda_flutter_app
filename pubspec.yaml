@@ -41,6 +41,7 @@ dependencies:
   image_picker: ^1.2.1
   intl: ^0.20.2
   names_launcher: ^0.0.2
+  package_info_plus: ^9.0.1
   path_provider: ^2.1.5
   permission_handler: ^12.0.1
   rive: ^0.13.20

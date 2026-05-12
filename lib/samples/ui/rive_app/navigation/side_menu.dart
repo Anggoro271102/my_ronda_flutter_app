@@ -1,10 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:flutter_samples/samples/ui/rive_app/components/menu_row.dart';
 import 'package:flutter_samples/samples/ui/rive_app/models/menu_item.dart';
 import 'package:flutter_samples/samples/ui/rive_app/theme.dart';
-import 'package:flutter_samples/samples/ui/rive_app/assets.dart' as app_assets;
 
 import '../core/localizations/app_localizations.dart';
 import 'auth/entities/user_model.dart';
@@ -34,9 +32,7 @@ class _SideMenuState extends State<SideMenu> {
   // final List<MenuItemModel> _historyMenuIcons = MenuItemModel.menuItems2;
   final List<MenuItemModel> _themeMenuIcon = MenuItemModel.menuItems3;
 
-  bool _isDarkMode = false;
   // // PERUBAHAN: Menambah variabel untuk history agar bisa diklik mandiri
-  String _selectedHistoryLabel = "";
 
   void onThemeRiveIconInit(artboard) {
     final controller = StateMachineController.fromArtboard(
@@ -55,7 +51,6 @@ class _SideMenuState extends State<SideMenu> {
 
   void onThemeToggle(value) {
     setState(() {
-      _isDarkMode = value;
     });
     _themeMenuIcon[0].riveIcon.status!.change(value);
   }
@@ -117,7 +112,7 @@ class _SideMenuState extends State<SideMenu> {
                     Text(
                       widget.user.role,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 15,
                         fontFamily: "Inter",
                       ),
@@ -210,7 +205,6 @@ class _SideMenuState extends State<SideMenu> {
           onMenuPress(index);
         } else {
           // Hanya update lokal untuk section non-navigasi (History)
-          setState(() => _selectedHistoryLabel = menu.title);
         }
       },
     );
@@ -246,7 +240,7 @@ class MenuButtonSection extends StatelessWidget {
           child: Text(
             title,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 15,
               fontFamily: "Inter",
               fontWeight: FontWeight.w600,
@@ -259,7 +253,7 @@ class MenuButtonSection extends StatelessWidget {
             children: [
               for (var menu in menuIcons) ...[
                 Divider(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   thickness: 1,
                   height: 1,
                   indent: 16,

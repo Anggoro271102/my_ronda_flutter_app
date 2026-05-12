@@ -17,8 +17,6 @@ final isFilterExpandedProvider = StateProvider<bool>((ref) => false);
 class MyReportListScreen extends ConsumerWidget {
   const MyReportListScreen({super.key});
 
-  static const Color _scaffoldBg = Color(0xFFF5F7FA);
-  static const Color _cardBg = Colors.white;
   static const Color _textPrimary = Color(0xFF212121);
   static const Color _textSecondary = Color(0xFF757575);
   static const Color _accentYellow = Color(0xFFFDD835);
@@ -184,7 +182,7 @@ class MyReportListScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                   ),
                 ],
@@ -313,7 +311,10 @@ class MyReportListScreen extends ConsumerWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 20,
+          ),
         ],
       ),
       child: Column(
@@ -412,7 +413,7 @@ class MyReportListScreen extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isActive ? color.withOpacity(0.1) : Colors.transparent,
+            color: isActive ? color.withValues(alpha: 0.1) : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: isActive ? color : Colors.grey.shade300),
           ),
@@ -518,7 +519,7 @@ class MyReportListScreen extends ConsumerWidget {
         width: 75,
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? color.withOpacity(0.1) : Colors.grey[50],
+          color: isActive ? color.withValues(alpha: 0.1) : Colors.grey[50],
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: isActive ? color : Colors.grey.shade300),
         ),
@@ -574,7 +575,7 @@ class MyReportListScreen extends ConsumerWidget {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -588,7 +589,7 @@ class MyReportListScreen extends ConsumerWidget {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: report.severityColor.withOpacity(0.1),
+                        color: report.severityColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
@@ -666,8 +667,8 @@ class MyReportListScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color:
             isOverride
-                ? Colors.amber.withOpacity(0.1)
-                : Colors.blue.withOpacity(0.1),
+                ? Colors.amber.withValues(alpha: 0.1)
+                : Colors.blue.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(
@@ -696,7 +697,7 @@ class MyReportListScreen extends ConsumerWidget {
   //         borderRadius: BorderRadius.circular(24),
   //         boxShadow: [
   //           BoxShadow(
-  //             color: Colors.black.withOpacity(0.04),
+  //             color: Colors.black.withValues(alpha: 0.04),
   //             blurRadius: 10,
   //             offset: const Offset(0, 4),
   //           ),
@@ -710,7 +711,7 @@ class MyReportListScreen extends ConsumerWidget {
   //                 width: 50,
   //                 height: 50,
   //                 decoration: BoxDecoration(
-  //                   color: report.severityColor.withOpacity(0.1),
+  //                   color: report.severityColor.withValues(alpha: 0.1),
   //                   borderRadius: BorderRadius.circular(12),
   //                 ),
   //                 child: Icon(
@@ -773,8 +774,8 @@ class MyReportListScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color:
             isComplete
-                ? Colors.green.withOpacity(0.1)
-                : Colors.orange.withOpacity(0.1),
+                ? Colors.green.withValues(alpha: 0.1)
+                : Colors.orange.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(

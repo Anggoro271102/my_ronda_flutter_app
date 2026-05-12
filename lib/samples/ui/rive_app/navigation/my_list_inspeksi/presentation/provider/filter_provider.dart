@@ -19,7 +19,6 @@ final reportsRawProvider = FutureProvider.family<List<InspectionReport>, int?>((
   userId,
 ) async {
   // Debug print untuk memantau request di terminal VS Code kamu
-  print("DEBUG [RawProvider]: Request API untuk User ID: $userId");
 
   final dio = Dio(
     BaseOptions(
@@ -71,7 +70,6 @@ final filteredReportsProvider = Provider.family<
       // Jika kita di halaman 'My Reports' (userId != null),
       // maka data yang lolos HANYA yang punya report.userId yang sama.
       if (userId != null) {
-        print("COMPARE: LoginID($userId) vs ReportOwner(${report.userId})");
         if (report.userId != userId) return false;
       }
 

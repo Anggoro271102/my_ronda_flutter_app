@@ -133,9 +133,10 @@ class InspectionNotifier extends StateNotifier<InspectionState> {
       if (req.data is FormData) {
         final data = req.data as FormData;
         final fields = data.fields.map((f) => "${f.key}=${f.value}").toList();
-        final files = data.files
-            .map((f) => "${f.key}=${f.value.filename ?? 'unknown'}")
-            .toList();
+        final files =
+            data.files
+                .map((f) => "${f.key}=${f.value.filename ?? 'unknown'}")
+                .toList();
         debugPrint("[$tag] request form fields: $fields");
         debugPrint("[$tag] request form files: $files");
       } else {
@@ -175,12 +176,15 @@ class InspectionNotifier extends StateNotifier<InspectionState> {
 
     // HTTP status error
     if (status != null) {
-      if (status >= 500)
+      if (status >= 500) {
         return "Server sedang bermasalah ($status). Coba lagi beberapa saat.";
-      if (status == 401 || status == 403)
+      }
+      if (status == 401 || status == 403) {
         return "Sesi login tidak valid. Silakan login ulang.";
-      if (status == 413)
+      }
+      if (status == 413) {
         return "File terlalu besar. Coba foto ulang / kompres lebih kecil.";
+      }
       return "Gagal mengirim data ($status). Silakan coba lagi.";
     }
 
@@ -305,7 +309,7 @@ class InspectionNotifier extends StateNotifier<InspectionState> {
       final msg = _friendlyDioMessage(e);
       state = state.copyWith(isLoading: false, error: msg);
     } catch (e) {
-      print("ERROR PROCESS: $e");
+      // print("ERROR PROCESS: $e");
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }

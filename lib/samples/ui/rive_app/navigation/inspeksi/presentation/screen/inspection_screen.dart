@@ -1,9 +1,8 @@
 import 'dart:io';
 // Ganti baris import material/cupertino kamu menjadi seperti ini:
-import 'package:flutter/material.dart' hide Category;
-import 'package:flutter/cupertino.dart' hide Category;
-import 'package:flutter/foundation.dart'
-    hide Category; // Tambahkan jika ada// Tambahkan juga di sini
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+// Tambahkan jika ada// Tambahkan juga di sini
 
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -646,7 +645,7 @@ class _InspectionScreenState extends ConsumerState<InspectionScreen> {
             if (inspection.isLoading)
               Positioned.fill(
                 child: Container(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   child: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -748,7 +747,7 @@ class _InspectionScreenState extends ConsumerState<InspectionScreen> {
             borderRadius: BorderRadius.circular(12),
             border:
                 isOverride
-                    ? Border.all(color: _accentYellow.withOpacity(0.5))
+                    ? Border.all(color: _accentYellow.withValues(alpha: 0.5))
                     : null,
           ),
           child: Row(
@@ -941,7 +940,7 @@ class _InspectionScreenState extends ConsumerState<InspectionScreen> {
         width: 105,
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.grey[100],
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.grey[100],
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? color : Colors.transparent,
@@ -980,7 +979,10 @@ class _InspectionScreenState extends ConsumerState<InspectionScreen> {
         color: _cardBg,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 15,
+          ),
         ],
       ),
       child: AnimatedSize(
@@ -1155,6 +1157,7 @@ class _InspectionScreenState extends ConsumerState<InspectionScreen> {
   }) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
+      color: Colors.transparent,
       width: double.infinity,
       height: 60,
       child: ElevatedButton(
